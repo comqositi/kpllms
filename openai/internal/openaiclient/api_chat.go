@@ -269,11 +269,13 @@ func (c *Client) createChat(ctx context.Context, payload *ChatRequest) (*ChatCom
 		if err != nil {
 			return nil, err
 		}
-		// TODO openai stream 模式没有返回消耗的 token，此处自己计算
+		//  openai stream 模式没有返回消耗的 token，此处自己计算
+		PromptTokens := NumTokensFromMessages(payload.Messages, c.Model)
+		CompletionTokens := CountTokens(c.Model, response.Choices[0].Message.Content)
 		response.Usage = ChatUsage{
-			PromptTokens:     100,
-			CompletionTokens: 100,
-			TotalTokens:      200,
+			PromptTokens:     PromptTokens,
+			CompletionTokens: CompletionTokens,
+			TotalTokens:      PromptTokens + CompletionTokens,
 		}
 
 	} else {
