@@ -155,6 +155,8 @@ func TestLLM_Function_Call(t *testing.T) {
 	if resp.Choices[0].StopReason != "tool_calls" {
 		return
 	}
+
+	// 如果返回的是 函数， 将返回的函数和执行函数的结果，再次加入上下文，请求回答
 	messages = append(messages, &schema.ChatMessage{
 		Role:      schema.RoleAssistant,
 		ToolCalls: resp.Choices[0].ToolCalls,
