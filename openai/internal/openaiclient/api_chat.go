@@ -246,7 +246,7 @@ func (c *Client) createChat(ctx context.Context, payload *ChatRequest) (*ChatCom
 				// 写入最后一个结束标识
 				response.Choices[0].FinishReason = streamResponse.Choices[0].FinishReason
 				// 调用用户 func
-				return payload.StreamingFunc(ctx, []byte(chunk))
+				return payload.StreamingFunc(ctx, chunk)
 			}
 
 			// 如果是函数调用， 遇到 type=function 加入一个函数,  openai有并行返回函数的功能
