@@ -15,7 +15,7 @@ type CallOptions struct {
 	// 温度 0-2
 	Temperature float64 `json:"temperature"`
 	// 流式输出
-	StreamingFunc func(ctx context.Context, chunk []byte) error `json:"-"`
+	StreamingFunc func(ctx context.Context, chunk []byte, innerErr error) error `json:"-"`
 	// 采样率 0.1 = 10%
 	TopP float64 `json:"top_p"`
 	// 返回格式，例如：{ "type": "json_object" }
@@ -69,7 +69,7 @@ func WithTemperature(temperature float64) CallOption {
 	}
 }
 
-func WithStreamingFunc(streamingFunc func(ctx context.Context, chunk []byte) error) CallOption {
+func WithStreamingFunc(streamingFunc func(ctx context.Context, chunk []byte, innerErr error) error) CallOption {
 	return func(o *CallOptions) {
 		o.StreamingFunc = streamingFunc
 	}

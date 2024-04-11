@@ -60,10 +60,11 @@ func TestLLM_Stream(t *testing.T) {
 			Content: "查询一下北京的天气？",
 		},
 	}
-	resp, err := llm.Chat(ctx, messages, kpllms.WithStreamingFunc(func(ctx context.Context, chunk []byte) error {
-		fmt.Println(string(chunk))
-		return nil
-	}))
+	resp, err := llm.Chat(ctx, messages,
+		kpllms.WithStreamingFunc(func(ctx context.Context, chunk []byte, innerErr error) error {
+			fmt.Println(string(chunk))
+			return nil
+		}))
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -95,7 +96,7 @@ func TestLLM_Function_Call(t *testing.T) {
 		},
 	}
 	resp, err := llm.Chat(ctx, messages,
-		kpllms.WithStreamingFunc(func(ctx context.Context, chunk []byte) error {
+		kpllms.WithStreamingFunc(func(ctx context.Context, chunk []byte, innerErr error) error {
 			fmt.Println(string(chunk))
 			return nil
 		}),
@@ -187,7 +188,7 @@ func TestLLM_Function_Call(t *testing.T) {
 
 	resp, err = llm.Chat(ctx, messages,
 		kpllms.WithModel(modelName),
-		kpllms.WithStreamingFunc(func(ctx context.Context, chunk []byte) error {
+		kpllms.WithStreamingFunc(func(ctx context.Context, chunk []byte, innerErr error) error {
 			fmt.Println(string(chunk))
 			return nil
 		},
