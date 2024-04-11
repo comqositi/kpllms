@@ -186,7 +186,6 @@ func (o *LLM) Chat(ctx context.Context, messages []*schema.ChatMessage, options 
 		}
 
 		if c.FinishReason == "tool_calls" {
-			// TODO: we can only handle a single tool call for now, we need to evolve the API to handle multiple tool calls.
 			for _, tool := range c.Message.ToolCalls {
 				choices[i].ToolCalls = append(choices[i].ToolCalls, &schema.ToolCall{
 					Id:   tool.ID,
@@ -197,10 +196,7 @@ func (o *LLM) Chat(ctx context.Context, messages []*schema.ChatMessage, options 
 					},
 				})
 			}
-			//// populate legacy single-function call field for backwards compatibility
-			//if len(choices[i].ToolCalls) > 0 {
-			//	choices[i].FuncCall = choices[i].ToolCalls[0].FunctionCall
-			//}
+
 		}
 	}
 	response := &schema.ContentResponse{Choices: choices}
