@@ -37,10 +37,11 @@ func (c *Client) createEmbedding(ctx context.Context, payload *embeddingPayload)
 	}
 
 	if c.apiType == APITypeOpenAI {
-		payload.Model = c.embeddingsModel
+		payload.Model = c.EmbeddingsModel
 	}
+
 	var response embeddingResponsePayload
-	err := httputils.HttpPost(ctx, c.buildURL("/embeddings", c.embeddingsModel), payload, c.setHeaders(), &response)
+	err := httputils.HttpPost(ctx, c.buildURL("/embeddings", c.EmbeddingsModel), payload, c.setHeaders(), &response)
 	if err != nil {
 		return nil, err
 	}

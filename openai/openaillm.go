@@ -221,3 +221,37 @@ func toolFromTool(t *kpllms.Tool) (openaiclient.Tool, error) {
 	}
 	return tool, nil
 }
+
+// EmbedDocuments  实现 embedder 接口 文档存储向量：存入数据库的向量，被用于检索
+func (o *LLM) EmbedDocuments(ctx context.Context, texts []string) ([][]float32, error) {
+	embeddings, err := o.client.CreateEmbedding(ctx, &openaiclient.EmbeddingRequest{
+		Input: texts,
+		Model: o.client.EmbeddingsModel,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(embeddings) == 0 {
+		return nil, ErrEmptyResponse
+	}
+	if len(texts) != len(embeddings) {
+		return embeddings, ErrUnexpectedResponseLength
+	}
+	return embeddings, nil
+}
+
+// EmbedQuery  实现 embedder 接口 查询向量：对需要用于检索的文本进行想量化
+func (o *LLM) EmbedQuery(ctx context.Context, text string) ([]float32, error) {
+	embeddings, err := o.client.CreateEmbedding(ctx, &openaiclient.EmbeddingRequest{
+		Input: []string{text},
+		Model: o.client.Model,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(embeddings) == 0 {
+		return nil, ErrEmptyResponse
+	}
+	return embeddings[0], nil
+
+}

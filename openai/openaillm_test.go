@@ -221,3 +221,32 @@ func getFapiao(corpName string) string {
 	b, _ := json.Marshal(res)
 	return string(b)
 }
+
+func TestEmbedding(t *testing.T) {
+	//modelName := "gpt-4-1106-preview"
+	ctx := context.Background()
+	embedLLM, err := New(WithToken(token), WithBaseURL(baseUrl), WithEmbeddingModel("text-embedding-ada-002"))
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	texts := []string{
+		"hello",
+		"你好",
+	}
+	res, err := embedLLM.EmbedDocuments(ctx, texts)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Printf("res length : %d \n", len(res))
+	fmt.Printf("res 向量长度： %d \n", len(res[0]))
+
+	res1, err := embedLLM.EmbedQuery(ctx, "你好")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Printf("res query length : %d \n", len(res1))
+
+}

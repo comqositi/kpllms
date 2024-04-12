@@ -37,7 +37,7 @@ type Client struct {
 
 	// required when APIType is APITypeAzure or APITypeAzureAD
 	apiVersion      string
-	embeddingsModel string
+	EmbeddingsModel string
 }
 
 // Option is an option for the OpenAI client.
@@ -56,7 +56,7 @@ func New(token string, model string, baseURL string, organization string,
 	c := &Client{
 		token:           token,
 		Model:           model,
-		embeddingsModel: embeddingsModel,
+		EmbeddingsModel: embeddingsModel,
 		baseURL:         strings.TrimSuffix(baseURL, "/"),
 		organization:    organization,
 		apiType:         apiType,
@@ -78,7 +78,7 @@ type Completion struct {
 	Text string `json:"text"`
 }
 
-// CreateCompletion creates a completion.
+// CreateCompletion creates a completion. 此方法用的少，可不用实现
 func (c *Client) CreateCompletion(ctx context.Context, r *CompletionRequest) (*Completion, error) {
 	resp, err := c.createCompletion(ctx, r)
 	if err != nil {
@@ -104,10 +104,11 @@ func (c *Client) CreateEmbedding(ctx context.Context, r *EmbeddingRequest) ([][]
 		r.Model = defaultEmbeddingModel
 	}
 
-	resp, err := c.createEmbedding(ctx, &embeddingPayload{
+	a := &embeddingPayload{
 		Model: r.Model,
 		Input: r.Input,
-	})
+	}
+	resp, err := c.createEmbedding(ctx, a)
 	if err != nil {
 		return nil, err
 	}
