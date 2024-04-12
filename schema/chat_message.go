@@ -10,8 +10,13 @@ const (
 	// 工具调用的结果
 	RoleTool = "tool"
 
-	MultiContentText     = "text"
+	// 输入内容类型， 文本
+	MultiContentText = "text"
+	// 输入内容类型，image_url
 	MultiContentImageUrl = "image_url"
+
+	// json mod 格式
+	JsonMode = "json_object"
 )
 
 // ChatMessage 以 openai 的接口为标准定义统一参数

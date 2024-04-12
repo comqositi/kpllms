@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/comqositi/kpllms"
+	"github.com/comqositi/kpllms/openai"
 	"github.com/comqositi/kpllms/schema"
 	"os"
 	"testing"
@@ -16,7 +17,8 @@ var token = os.Getenv("OPENAI_API_KEY")
 // 测试 chat 调用
 func TestLLM_Chat(t *testing.T) {
 	ctx := context.Background()
-	llm, err := New(WithToken(token), WithBaseURL(baseUrl))
+	llm, err := openai.New(openai.WithToken(token), openai.WithBaseURL(baseUrl)) //openai.WithResponseFormat(openai.ResponseFormatJSON),
+
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -47,7 +49,7 @@ func TestLLM_Chat(t *testing.T) {
 // 测试 stream 返回
 func TestLLM_Stream(t *testing.T) {
 	ctx := context.Background()
-	llm, err := New(WithToken(token), WithBaseURL(baseUrl))
+	llm, err := openai.New(openai.WithToken(token), openai.WithBaseURL(baseUrl))
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -83,7 +85,7 @@ func TestLLM_Stream(t *testing.T) {
 func TestLLM_Function_Call(t *testing.T) {
 	modelName := "gpt-4-1106-preview"
 	ctx := context.Background()
-	llm, err := New(WithToken(token), WithBaseURL(baseUrl), WithModel(modelName))
+	llm, err := openai.New(openai.WithToken(token), openai.WithBaseURL(baseUrl), openai.WithModel(modelName))
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -229,7 +231,7 @@ func getFapiao(corpName string) string {
 func TestEmbedding(t *testing.T) {
 	//modelName := "gpt-4-1106-preview"
 	ctx := context.Background()
-	embedLLM, err := New(WithToken(token), WithBaseURL(baseUrl), WithEmbeddingModel("text-embedding-ada-002"))
+	embedLLM, err := openai.New(openai.WithToken(token), openai.WithBaseURL(baseUrl), openai.WithEmbeddingModel("text-embedding-ada-002"))
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -258,7 +260,7 @@ func TestEmbedding(t *testing.T) {
 // 测试对话包含图片
 func TestImageContent(t *testing.T) {
 	ctx := context.Background()
-	llm, err := New(WithToken(token), WithBaseURL(baseUrl), WithModel("gpt-4-vision-preview"))
+	llm, err := openai.New(openai.WithToken(token), openai.WithBaseURL(baseUrl), openai.WithModel("gpt-4-vision-preview"))
 	if err != nil {
 		fmt.Println(err.Error())
 		return
