@@ -13,6 +13,7 @@ import (
 var baseUrl = "https://apiagent.kaopuai.com/v1"
 var token = os.Getenv("OPENAI_API_KEY")
 
+// 测试 chat 调用
 func TestLLM_Chat(t *testing.T) {
 	ctx := context.Background()
 	llm, err := New(WithToken(token), WithBaseURL(baseUrl))
@@ -43,6 +44,7 @@ func TestLLM_Chat(t *testing.T) {
 	fmt.Println(string(b))
 }
 
+// 测试 stream 返回
 func TestLLM_Stream(t *testing.T) {
 	ctx := context.Background()
 	llm, err := New(WithToken(token), WithBaseURL(baseUrl))
@@ -77,6 +79,7 @@ func TestLLM_Stream(t *testing.T) {
 	fmt.Println(string(b))
 }
 
+// 测试函数调用
 func TestLLM_Function_Call(t *testing.T) {
 	modelName := "gpt-4-1106-preview"
 	ctx := context.Background()
@@ -222,6 +225,7 @@ func getFapiao(corpName string) string {
 	return string(b)
 }
 
+// 测试向量化
 func TestEmbedding(t *testing.T) {
 	//modelName := "gpt-4-1106-preview"
 	ctx := context.Background()
@@ -249,4 +253,48 @@ func TestEmbedding(t *testing.T) {
 	}
 	fmt.Printf("res query length : %d \n", len(res1))
 
+}
+
+// 测试对话包含图片
+func TestImageContent(t *testing.T) {
+	ctx := context.Background()
+	llm, err := New(WithToken(token), WithBaseURL(baseUrl), WithModel("gpt-4-vision-preview"))
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	messages := []*schema.ChatMessage{
+		&schema.ChatMessage{
+			Role:    schema.RoleSystem,
+			Content: "你是一个 AI 助手",
+		},
+		&schema.ChatMessage{
+			Role: schema.RoleUser,
+			Content: []any{
+				schema.TextContent{
+					Type: schema.MultiContentText,
+					Text: "图片里描述的是什么？",
+				},
+				schema.ImageContent{
+					Type:     schema.MultiContentImageUrl,
+					ImageUrl: "https://www.bangongyi.com/statics/images/bgy/index/index_1.jpg",
+				},
+			},
+		},
+	}
+	resp, err := llm.Chat(ctx, messages,
+		kpllms.WithStreamingFunc(func(ctx context.Context, chunk []byte, innerErr error) error {
+			fmt.Println(string(chunk))
+			return nil
+		}))
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	b, err := json.Marshal(resp)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(string(b))
 }

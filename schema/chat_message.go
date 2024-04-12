@@ -9,6 +9,9 @@ const (
 	RoleAssistant = "assistant"
 	// 工具调用的结果
 	RoleTool = "tool"
+
+	MultiContentText     = "text"
+	MultiContentImageUrl = "image_url"
 )
 
 // ChatMessage 以 openai 的接口为标准定义统一参数
