@@ -17,6 +17,8 @@ const (
 
 	// json mod 格式
 	JsonMode = "json_object"
+
+	ToolCallTypeFunction = "function"
 )
 
 // ChatMessage 以 openai 的接口为标准定义统一参数
