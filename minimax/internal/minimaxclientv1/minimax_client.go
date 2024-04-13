@@ -63,7 +63,7 @@ func (c *Client) CreateCompletion(ctx context.Context, r *CompletionRequest) (*C
 
 	if r.Stream {
 		err := httputils.HttpStream(ctx, url, r, c.setHeader(), func(ctx context.Context, line string) error {
-			fmt.Println(line)
+			//fmt.Println(line)
 			if line == "\n" || line == "" {
 				return nil
 			}

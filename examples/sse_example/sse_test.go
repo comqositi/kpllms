@@ -3,6 +3,10 @@ package sse_example
 import (
 	"context"
 	"fmt"
+	"github.com/comqositi/kpllms"
+	"github.com/comqositi/kpllms/internal/utils"
+	"github.com/comqositi/kpllms/minimax"
+	"github.com/comqositi/kpllms/schema"
 	"github.com/comqositi/kpllms/ssekpai"
 	"net/http"
 	"strconv"
@@ -37,6 +41,7 @@ func (m *MockResponseWriter) Flush() {
 	//fmt.Print("flush")
 }
 
+// 调用大模型，并将大模型结果通过 sse 返回给前端
 func TestSse(t *testing.T) {
 
 	w := &MockResponseWriter{}
@@ -52,19 +57,27 @@ func TestSse(t *testing.T) {
 			fmt.Println("time out ")
 		}),
 	)
-	var resp Response
+	//var resp Response
+	var resllm schema.ContentResponse
 	go func() {
-		// 执行业务逻辑， 外部接收函数执行参数
-		result := WriteData(c)
-		// 赋值返回值，供外部使用
-		resp.Success = result.Success
+		//// 执行业务逻辑， 外部接收函数执行参数
+		//result := WriteData(c)
+		//// 赋值返回值，供外部使用
+		//resp.Success = result.Success
+
+		res, err := writeByLlm(c)
+		if err != nil {
+			fmt.Println(err.Error())
+		} else {
+			resllm.Choices = res.Choices
+		}
 	}()
 
 	// 此方法会阻塞， 先使用 goroutine 执行业务逻辑
 	c.SendMsgBlock()
 
 	fmt.Println("=====")
-	fmt.Println(resp.Success)
+	utils.PrintlnJson(resllm)
 }
 
 type Response struct {
@@ -85,4 +98,38 @@ func WriteData(s *ssekpai.Sse) *Response {
 		time.Sleep(1 * time.Second)
 	}
 	return &Response{Success: "over"}
+}
+
+var baseUrl = "https://api.minimax.chat/v1"
+var modelName = "abab5.5-chat"
+
+// 调用大模型，并将大模型返回的结果通过 sse 输出给前端
+func writeByLlm(s *ssekpai.Sse) (*schema.ContentResponse, error) {
+
+	defer s.Finished()
+
+	llm, err := minimax.NewChat(minimax.WithBaseUrl(baseUrl), minimax.WithModel(modelName))
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+	messages := []*schema.ChatMessage{
+		{
+			Role:    schema.RoleSystem,
+			Content: "你是一个 AI助手",
+		},
+		{
+			Role:    schema.RoleUser,
+			Content: "今天天气怎么样",
+		},
+	}
+	resp, err := llm.Chat(context.Background(), messages, kpllms.WithStreamingFunc(func(ctx context.Context, chunk []byte, innerErr error) error {
+		evt := ssekpai.Event{
+			Event: "message",
+			Data:  string(chunk),
+		}
+		s.StreamData(evt)
+		return nil
+	}))
+	return resp, nil
 }
