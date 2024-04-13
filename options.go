@@ -18,13 +18,11 @@ type CallOptions struct {
 	StreamingFunc func(ctx context.Context, chunk []byte, innerErr error) error
 	// 采样率 0.1 = 10%
 	TopP float64
-	/// 是否严格要求返回 json 格式
+	/// 是否严格要求返回 json 格式, true: 强制 json 格式返回
 	JsonMode bool
-	// 返回格式，例如：{ "type": "json_object" }
-	//ResponseFormat *ResponseFormat `json:"response_format"`
 	// 函数定义
 	Tools []*Tool
-	// 函数调用方式  auto， none  指定：{"type":"auto/none/function","function":}
+	// 函数调用方式  auto， none  指定：{"type":"auto/none/function","function":}, none: 不调用，auto：自动调用，默认是自动调用， functon，指定调用
 	ToolChoice ToolChoice
 }
 

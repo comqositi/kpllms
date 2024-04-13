@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+// 默认超时时间
+var defaultTimeOut = 30
+
 type Sse struct {
 	// ctx 必传
 	ctx context.Context
@@ -21,6 +24,8 @@ type Sse struct {
 	doneFunc func(done any)
 	// 处理 timeout
 	timeOutFunc func()
+	// timeout 秒
+	timeOutSecond int
 }
 
 // NewSse 创建 sse 示例
@@ -39,6 +44,11 @@ func NewSse(ctx context.Context, w http.ResponseWriter, opts ...Option) *Sse {
 	}
 	if o.timeOutFunc != nil {
 		sse.timeOutFunc = o.timeOutFunc
+	}
+
+	sse.timeOutSecond = o.timeOutSecond
+	if sse.timeOutSecond == 0 {
+		sse.timeOutSecond = defaultTimeOut
 	}
 	return sse
 }
@@ -68,13 +78,13 @@ func (s *Sse) SendMsgBlock() {
 	}
 
 	// sse 响应头
-	//s.w.Header().Set("Content-Type", "text/event-stream")
-	//// sse 不缓存
-	//s.w.Header().Set("Cache-Control", "no-cache")
-	//s.w.Header().Set("Connection", "keep-alive")
-	////s.w.Header().Set("Transfer-Encoding", "chunked")
-	//// 通知nginx反向代理，不要缓存数据
-	//s.w.Header().Set("X-Accel-Buffering", "no")
+	s.w.Header().Set("Content-Type", "text/event-stream")
+	// sse 不缓存
+	s.w.Header().Set("Cache-Control", "no-cache")
+	s.w.Header().Set("Connection", "keep-alive")
+	//s.w.Header().Set("Transfer-Encoding", "chunked")
+	// 通知nginx反向代理，不要缓存数据
+	s.w.Header().Set("X-Accel-Buffering", "no")
 
 	for {
 		select {
@@ -94,8 +104,8 @@ func (s *Sse) SendMsgBlock() {
 			}
 			Encode(s.w, event)
 			flush.Flush()
-		case <-time.After(60 * time.Second):
-			// 单次等待60秒后超时
+		case <-time.After(time.Duration(s.timeOutSecond) * time.Second):
+			// 单次等待超时
 			if s.timeOutFunc != nil {
 				s.timeOutFunc()
 			}

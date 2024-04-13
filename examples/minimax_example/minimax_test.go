@@ -93,6 +93,14 @@ func TestFunctionCall(t *testing.T) {
 			Role:    schema.RoleUser,
 			Content: "北京靠谱前程网络技术有限公司发票",
 		},
+		//{
+		//	Role:    schema.RoleAssistant,
+		//	Content: "北京靠谱前程网络技术有限公司发票信息是：2000万",
+		//},
+		//{
+		//	Role:    schema.RoleUser,
+		//	Content: "你叫什么名字",
+		//},
 	}
 
 	tools := []*kpllms.Tool{
@@ -156,6 +164,7 @@ func TestFunctionCall(t *testing.T) {
 	//if resp.Choices[0].StopReason != "tool_calls" {
 	//	return
 	//}
+
 	if resp.Choices[0].ToolCalls == nil {
 		return
 	}
