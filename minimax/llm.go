@@ -2,7 +2,7 @@ package minimax
 
 import (
 	"errors"
-	"github.com/comqositi/kpllms/minimax/minimaxclientv1"
+	minimaxclientv12 "github.com/comqositi/kpllms/minimax/internal/minimaxclientv1"
 	"net/http"
 	"os"
 )
@@ -13,7 +13,7 @@ var (
 	ErrUnexpectedResponseLength = errors.New("unexpected length of response")
 )
 
-func newClient(opts ...Option) (*minimaxclientv1.Client, error) {
+func newClient(opts ...Option) (*minimaxclientv12.Client, error) {
 	options := &options{
 		groupId:        os.Getenv(groupIdEnvVarName),
 		apiKey:         os.Getenv(apiKeyEnvVarName),
@@ -35,12 +35,12 @@ func newClient(opts ...Option) (*minimaxclientv1.Client, error) {
 		options.embeddingModel = defaultEmbeddingModel
 	}
 
-	return minimaxclientv1.NewClient(minimaxclientv1.WithGroupId(options.groupId),
-		minimaxclientv1.WithApiKey(options.apiKey),
-		minimaxclientv1.WithBaseUrl(options.baseUrl),
-		minimaxclientv1.WithHttpClient(options.httpClient),
-		minimaxclientv1.WithModel(options.model),
-		minimaxclientv1.WithEmbeddingsModel(options.embeddingModel),
+	return minimaxclientv12.NewClient(minimaxclientv12.WithGroupId(options.groupId),
+		minimaxclientv12.WithApiKey(options.apiKey),
+		minimaxclientv12.WithBaseUrl(options.baseUrl),
+		minimaxclientv12.WithHttpClient(options.httpClient),
+		minimaxclientv12.WithModel(options.model),
+		minimaxclientv12.WithEmbeddingsModel(options.embeddingModel),
 	)
 
 }

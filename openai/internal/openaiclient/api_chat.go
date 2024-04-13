@@ -64,7 +64,7 @@ type ToolChoice struct {
 
 type ToolFunction struct {
 	Name      string `json:"name"`
-	Arguments string `json:"arguments"`
+	Arguments string `json:"arguments,omitempty"`
 }
 
 // ToolCall is a call to a tool.

@@ -1,7 +1,7 @@
 package minimax
 
 import (
-	"github.com/comqositi/kpllms/minimax/minimaxclientv1"
+	"github.com/comqositi/kpllms/minimax/internal/minimaxclientv1"
 )
 
 const (

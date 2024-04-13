@@ -54,6 +54,11 @@ func (c *Client) CreateCompletion(ctx context.Context, r *CompletionRequest) (*C
 	}
 	url := fmt.Sprintf("%s/text/chatcompletion_pro?GroupId=%s", c.baseUrl, c.groupId)
 
+	//fmt.Println(url)
+	//fmt.Println("==========")
+	//b, _ := json.Marshal(r)
+	//fmt.Println(string(b))
+
 	var streamPayload Completion
 
 	if r.Stream {
@@ -72,6 +77,9 @@ func (c *Client) CreateCompletion(ctx context.Context, r *CompletionRequest) (*C
 			err := json.Unmarshal([]byte(data), &streamPayload)
 			if err != nil {
 				return err
+			}
+			if streamPayload.BaseResp.StatusCode != 0 {
+				return errors.New(fmt.Sprintf("statusCode: %d, errMsg: %s", streamPayload.BaseResp.StatusCode, streamPayload.BaseResp.StatusMsg))
 			}
 			// 用户输入内容命中敏感词
 			if streamPayload.InputSensitive {
@@ -95,6 +103,9 @@ func (c *Client) CreateCompletion(ctx context.Context, r *CompletionRequest) (*C
 		err := httputils.HttpPost(ctx, url, r, c.setHeader(), &streamPayload)
 		if err != nil {
 			return nil, err
+		}
+		if streamPayload.BaseResp.StatusCode != 0 {
+			return nil, errors.New(fmt.Sprintf("statusCode: %d, errMsg: %s", streamPayload.BaseResp.StatusCode, streamPayload.BaseResp.StatusMsg))
 		}
 	}
 

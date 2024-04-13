@@ -15,51 +15,53 @@ const (
 	// 输入内容类型，image_url
 	MultiContentImageUrl = "image_url"
 
-	// json mod 格式
-	JsonMode = "json_object"
-
+	// toocall  type:function 标识函数调用
 	ToolCallTypeFunction = "function"
+
+	ToolChoiceTypeFunction = "function"
+	ToolChoiceTypeAuto     = "auto"
+	ToolChoiceTypeNone     = "none"
 )
 
 // ChatMessage 以 openai 的接口为标准定义统一参数
 type ChatMessage struct {
 	// 必填字段 system  user  assistant  tool
-	Role string `json:"role"`
+	Role string
 	// 可选字段
-	Name string `json:"name,omitempty"`
+	Name string
 	// role： system、user、assistant  ，Content: string或者是数组。 Content/ToolCalls/ToolCallId三选其一
-	Content any `json:"content,omitempty"`
+	Content any
 	// role：assistant 返回调用了工具时才有此字段
-	ToolCalls []*ToolCall `json:"tool_calls,omitempty"`
+	ToolCalls []*ToolCall
 	// role：tool 才有， 携带函数调用结果
-	ToolCallId string `json:"tool_call_id,omitempty"`
+	ToolCallId string
 }
 
 type TextContent struct {
-	Type string `json:"type"`
-	Text string `json:"text"`
+	Type string
+	Text string
 }
 
 type ImageContent struct {
-	Type     string `json:"type"`
-	ImageUrl string `json:"image_url"`
+	Type     string
+	ImageUrl string
 }
 
 type ToolCall struct {
-	Id       string       `json:"id"`
-	Type     string       `json:"type"`
-	Function FunctionCall `json:"function"`
+	Id       string
+	Type     string
+	Function FunctionCall
 }
 
 type FunctionCall struct {
-	Name      string `json:"name"`
-	Arguments string `json:"arguments"`
+	Name      string
+	Arguments string
 }
 
 type ToolMessage struct {
-	Role       string `json:"role"`
-	Content    string `json:"content"`
-	ToolCallId string `json:"tool_call_id"`
+	Role       string
+	Content    string
+	ToolCallId string
 }
 
 // 大模型 response

@@ -9,21 +9,23 @@ type CallOption func(*CallOptions)
 
 type CallOptions struct {
 	// 模型代号， 例如：gpt-4
-	Model string `json:"model"`
+	Model string
 	// 最大输出 token 数
-	MaxTokens int `json:"max_tokens"`
+	MaxTokens int
 	// 温度 0-2
-	Temperature float64 `json:"temperature"`
+	Temperature float64
 	// 流式输出
-	StreamingFunc func(ctx context.Context, chunk []byte, innerErr error) error `json:"-"`
+	StreamingFunc func(ctx context.Context, chunk []byte, innerErr error) error
 	// 采样率 0.1 = 10%
-	TopP float64 `json:"top_p"`
+	TopP float64
+	/// 是否严格要求返回 json 格式
+	JsonMode bool
 	// 返回格式，例如：{ "type": "json_object" }
-	ResponseFormat *ResponseFormat `json:"response_format"`
+	//ResponseFormat *ResponseFormat `json:"response_format"`
 	// 函数定义
-	Tools []*Tool `json:"tools,omitempty"`
-	// 函数调用方式  auto， 指定：{"type":"","function":""}
-	ToolChoice any `json:"tool_choice"`
+	Tools []*Tool
+	// 函数调用方式  auto， none  指定：{"type":"auto/none/function","function":}
+	ToolChoice ToolChoice
 }
 
 type ResponseFormat struct {
@@ -44,11 +46,11 @@ type FunctionDefinition struct {
 
 type ToolChoice struct {
 	Type     string             `json:"type"`
-	Function *FunctionReference `json:"function,omitempty"`
+	Function ToolChoiceFunction `json:"function,omitempty"`
 }
 
-type FunctionReference struct {
-	Name string `json:"name"`
+type ToolChoiceFunction struct {
+	Name string
 }
 
 func WithModel(model string) CallOption {
@@ -81,9 +83,9 @@ func WithTopP(topP float64) CallOption {
 	}
 }
 
-func WithResponseFormat(format *ResponseFormat) CallOption {
+func WithJsonMode(jsonMode bool) CallOption {
 	return func(o *CallOptions) {
-		o.ResponseFormat = format
+		o.JsonMode = jsonMode
 	}
 }
 
@@ -93,7 +95,7 @@ func WithTools(tools []*Tool) CallOption {
 	}
 }
 
-func WithToolChoice(choice any) CallOption {
+func WithToolChoice(choice ToolChoice) CallOption {
 	return func(o *CallOptions) {
 		o.ToolChoice = choice
 	}

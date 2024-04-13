@@ -148,18 +148,32 @@ func (o *LLM) Chat(ctx context.Context, messages []*schema.ChatMessage, options 
 		Temperature:   opts.Temperature,
 		MaxTokens:     opts.MaxTokens,
 		TopP:          opts.TopP,
-		ToolChoice:    opts.ToolChoice,
 	}
-	if opts.ResponseFormat != nil {
+
+	// 使用 json 格式返回
+	if opts.JsonMode {
 		req.ResponseFormat = ResponseFormatJSON
 	}
 
+	// 组装工具
 	for _, tool := range opts.Tools {
 		t, err := toolFromTool(tool)
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert llms tool to openai tool: %w", err)
 		}
 		req.Tools = append(req.Tools, t)
+	}
+
+	// 指定调用函数
+	if opts.ToolChoice.Type == schema.ToolChoiceTypeFunction {
+		req.ToolChoice = openaiclient.ToolChoice{
+			Type: "function",
+			Function: openaiclient.ToolFunction{
+				Name: opts.ToolChoice.Function.Name,
+			},
+		}
+	} else if opts.ToolChoice.Type == schema.ToolChoiceTypeNone {
+		req.ToolChoice = "none"
 	}
 
 	result, err := o.client.CreateChat(ctx, req)
