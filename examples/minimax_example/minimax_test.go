@@ -224,3 +224,31 @@ func getFapiao(corpName string) string {
 	b, _ := json.Marshal(res)
 	return string(b)
 }
+
+// 测试向量化
+func TestEmbedding(t *testing.T) {
+	llmEmb, err := minimax.NewChat(minimax.WithBaseUrl(baseUrl))
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	texts := []string{
+		"hello",
+		"你好",
+	}
+	res, err := llmEmb.EmbedDocuments(context.Background(), texts)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Printf("res  EmbedDocuments length : %d \n", len(res))
+	fmt.Printf("res EmbedDocuments 向量长度： %d \n", len(res[0]))
+
+	res1, err := llmEmb.EmbedQuery(context.Background(), "你好")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Printf("res query length : %d \n", len(res1))
+
+}

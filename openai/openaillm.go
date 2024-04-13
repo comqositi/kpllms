@@ -173,6 +173,7 @@ func (o *LLM) Chat(ctx context.Context, messages []*schema.ChatMessage, options 
 			},
 		}
 	} else if opts.ToolChoice.Type == schema.ToolChoiceTypeNone {
+		// 不调用函数，同时会忽略函数定义的 token 计算
 		req.ToolChoice = "none"
 	}
 
