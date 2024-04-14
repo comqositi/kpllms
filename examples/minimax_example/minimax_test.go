@@ -62,7 +62,7 @@ func TestStreamChat(t *testing.T) {
 		},
 	}
 	resp, err := llm.Chat(context.Background(), messages, kpllms.WithStreamingFunc(func(ctx context.Context, chunk []byte, innerErr error) error {
-		fmt.Println("chunk", chunk)
+		fmt.Println("chunk", string(chunk))
 		return nil
 	}))
 	if err != nil {
@@ -260,4 +260,11 @@ func TestEmbedding(t *testing.T) {
 	}
 	fmt.Printf("res query length : %d \n", len(res1))
 
+}
+
+func TestCloseChain(t *testing.T) {
+	c := make(chan string)
+
+	close(c)
+	close(c)
 }

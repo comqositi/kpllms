@@ -59,16 +59,16 @@ func (s *Sse) StreamData(e Event) {
 }
 
 func (s *Sse) Finished() {
-	close(s.eventChain)
+	if !s.isClosed {
+		close(s.eventChain)
+	}
 }
 
 // SendMsgBlock 持续读取通道消息, 并发送给客户端
 func (s *Sse) SendMsgBlock() {
 
 	defer func() {
-		if !s.isClosed {
-			close(s.eventChain)
-		}
+		s.Finished()
 	}()
 
 	flush, ok := s.w.(http.Flusher)
