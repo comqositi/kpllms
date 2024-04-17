@@ -1,14 +1,11 @@
 package minimaxclientv1
 
 import (
-	"bufio"
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/comqositi/kpllms/internal/httputils"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -89,6 +86,10 @@ func (c *Client) CreateCompletion(ctx context.Context, r *CompletionRequest) (*C
 			if streamPayload.OutputSensitive {
 				return errors.New("模型返回：输出内容违规")
 			}
+			// 如果调用了 functon， 无需流式返回数据
+			if streamPayload.Choices[0].Messages[0].FunctionCall != nil {
+				return nil
+			}
 			if streamPayload.Choices[0].FinishReason == "stop" {
 				return nil
 			}
@@ -118,51 +119,4 @@ func (c *Client) setHeader() map[string]string {
 		"Content-Type":  "application/json",
 		"Authorization": "Bearer " + c.apiKey,
 	}
-}
-
-func parseStreamingCompletionResponse(ctx context.Context, resp *http.Response, request *CompletionRequest) (*Completion, error) {
-	scanner := bufio.NewScanner(resp.Body)
-	dataPrefix := "data: "
-	i := 0
-	streamPayload := Completion{}
-	for scanner.Scan() {
-		i++
-		line := scanner.Text()
-		fmt.Printf("%d : %s\n", i, line)
-		if line == "\n" || line == "" {
-			continue
-		}
-		var data string
-		if !strings.HasPrefix(line, dataPrefix) {
-			continue
-		} else {
-			// 错误  {"error_code":6,"error_msg":"No permission to access data"}
-			data = strings.TrimPrefix(line, dataPrefix)
-		}
-		//fmt.Println("data=====", data)
-		err := json.NewDecoder(bytes.NewReader([]byte(data))).Decode(&streamPayload)
-		if err != nil {
-			log.Fatalf("failed to decode stream payload: %v", err)
-		}
-		if streamPayload.OutputSensitive {
-			return nil, errors.New("内容违规")
-		}
-
-		if request.StreamingFunc != nil && len(streamPayload.Choices) > 0 && len(streamPayload.Choices[0].Messages) > 0 {
-			if streamPayload.Choices[0].FinishReason == "stop" {
-				break
-			}
-			err = request.StreamingFunc(ctx, []byte(streamPayload.Choices[0].Messages[0].Text), nil)
-			if err != nil {
-				return nil, fmt.Errorf("streaming func returned an error: %w", err)
-			}
-		}
-
-	}
-	if err := scanner.Err(); err != nil {
-		log.Println("issue scanning response:", err)
-	}
-
-	fmt.Println("last last :", streamPayload.Choices[0].Messages[0].Text)
-	return &streamPayload, nil
 }
