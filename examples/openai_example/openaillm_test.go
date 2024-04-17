@@ -83,7 +83,7 @@ func TestLLM_Stream(t *testing.T) {
 
 // 测试函数调用
 func TestLLM_Function_Call(t *testing.T) {
-	modelName := "gpt-4-1106-preview"
+	modelName := "gpt-4-0613"
 	ctx := context.Background()
 	llm, err := openai.New(openai.WithToken(token), openai.WithBaseURL(baseUrl), openai.WithModel(modelName))
 	if err != nil {
@@ -98,11 +98,12 @@ func TestLLM_Function_Call(t *testing.T) {
 		&schema.ChatMessage{
 			Role:    schema.RoleUser,
 			Content: "查询一下北京的天气？查询一下北京靠谱前程网络技术有限公司的发票信息",
+			//Content: "介绍一下你的技能",
 		},
 	}
 	resp, err := llm.Chat(ctx, messages,
 		kpllms.WithStreamingFunc(func(ctx context.Context, chunk []byte, innerErr error) error {
-			fmt.Println(string(chunk))
+			fmt.Println("chunk", string(chunk))
 			return nil
 		}),
 		kpllms.WithTools([]*kpllms.Tool{
@@ -156,7 +157,7 @@ func TestLLM_Function_Call(t *testing.T) {
 		fmt.Println(err.Error())
 		return
 	}
-	fmt.Println(string(b))
+	fmt.Println("最终结果：", string(b))
 
 	return
 

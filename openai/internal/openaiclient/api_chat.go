@@ -237,6 +237,8 @@ func (c *Client) createChat(ctx context.Context, payload *ChatRequest) (*ChatCom
 			if len(streamResponse.Choices) == 0 {
 				return nil
 			}
+			// 写入最后一个结束标识
+			response.Choices[0].FinishReason = streamResponse.Choices[0].FinishReason
 			// 如果是非函数调用
 			if streamResponse.Choices[0].Delta.ToolCalls == nil {
 				// 空文本不传
@@ -247,8 +249,6 @@ func (c *Client) createChat(ctx context.Context, payload *ChatRequest) (*ChatCom
 				chunk := []byte(streamResponse.Choices[0].Delta.Content)
 				// 拼接所有内容
 				response.Choices[0].Message.Content += streamResponse.Choices[0].Delta.Content
-				// 写入最后一个结束标识
-				response.Choices[0].FinishReason = streamResponse.Choices[0].FinishReason
 				// 调用用户 func
 				return payload.StreamingFunc(ctx, chunk, nil)
 			}
@@ -262,12 +262,12 @@ func (c *Client) createChat(ctx context.Context, payload *ChatRequest) (*ChatCom
 				response.Choices[0].Message.ToolCalls[toolCallIndex].ID = streamResponse.Choices[0].Delta.ToolCalls[0].ID
 				response.Choices[0].Message.ToolCalls[toolCallIndex].Type = streamResponse.Choices[0].Delta.ToolCalls[0].Type
 				response.Choices[0].Message.ToolCalls[toolCallIndex].Function.Name = streamResponse.Choices[0].Delta.ToolCalls[0].Function.Name
+				fmt.Println(len(response.Choices[0].Message.ToolCalls))
 			}
 			response.Choices[0].Message.ToolCalls[toolCallIndex].Function.Arguments += streamResponse.Choices[0].Delta.ToolCalls[0].Function.Arguments
 
 			// 如果是 function则无需 stream 流式返回，避免输出错误
-			// 写入最后一个结束标识
-			response.Choices[0].FinishReason = streamResponse.Choices[0].FinishReason
+
 			return nil
 		})
 		if err != nil {

@@ -185,11 +185,9 @@ func (o *LLM) Chat(ctx context.Context, messages []*schema.ChatMessage, options 
 		return nil, ErrEmptyResponse
 	}
 
-	choices := make([]*schema.ContentChoice, len(result.Choices))
-	//ss, _ := json.Marshal(result)
-	//fmt.Println(string(ss))
+	choices := make([]*schema.ContentChoice, 0, 1)
 	for i, c := range result.Choices {
-		choices[i] = &schema.ContentChoice{
+		choices = append(choices, &schema.ContentChoice{
 
 			Content:    c.Message.Content,
 			StopReason: fmt.Sprint(c.FinishReason),
@@ -198,7 +196,7 @@ func (o *LLM) Chat(ctx context.Context, messages []*schema.ChatMessage, options 
 				CompletionTokens: result.Usage.PromptTokens,
 				TotalTokens:      result.Usage.TotalTokens,
 			},
-		}
+		})
 
 		if c.FinishReason == "tool_calls" {
 			for _, tool := range c.Message.ToolCalls {
