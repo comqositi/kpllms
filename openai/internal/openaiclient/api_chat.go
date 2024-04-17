@@ -262,7 +262,7 @@ func (c *Client) createChat(ctx context.Context, payload *ChatRequest) (*ChatCom
 				response.Choices[0].Message.ToolCalls[toolCallIndex].ID = streamResponse.Choices[0].Delta.ToolCalls[0].ID
 				response.Choices[0].Message.ToolCalls[toolCallIndex].Type = streamResponse.Choices[0].Delta.ToolCalls[0].Type
 				response.Choices[0].Message.ToolCalls[toolCallIndex].Function.Name = streamResponse.Choices[0].Delta.ToolCalls[0].Function.Name
-				fmt.Println(len(response.Choices[0].Message.ToolCalls))
+				//fmt.Println(len(response.Choices[0].Message.ToolCalls))
 			}
 			response.Choices[0].Message.ToolCalls[toolCallIndex].Function.Arguments += streamResponse.Choices[0].Delta.ToolCalls[0].Function.Arguments
 
