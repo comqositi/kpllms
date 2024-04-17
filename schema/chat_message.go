@@ -38,13 +38,13 @@ type ChatMessage struct {
 }
 
 type TextContent struct {
-	Type string
-	Text string
+	Type string `json:"type"`
+	Text string `json:"text"`
 }
 
 type ImageContent struct {
-	Type     string
-	ImageUrl string
+	Type     string `json:"type"`
+	ImageUrl string `json:"image_url"`
 }
 
 type ToolCall struct {

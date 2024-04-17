@@ -97,6 +97,7 @@ type streamFunc = func(ctx context.Context, line string) error
 // HttpStream http sse 默认 post 提交
 func HttpStream(ctx context.Context, baseUrl string, payload any, headers map[string]string, sfunc streamFunc) error {
 	payloadBytes, err := json.Marshal(payload)
+	fmt.Println(string(payloadBytes))
 	if err != nil {
 		return schema.NewHttpError(0, err.Error())
 	}
