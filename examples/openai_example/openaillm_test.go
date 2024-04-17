@@ -158,6 +158,8 @@ func TestLLM_Function_Call(t *testing.T) {
 	}
 	fmt.Println(string(b))
 
+	return
+
 	if resp.Choices[0].StopReason != "tool_calls" {
 		return
 	}

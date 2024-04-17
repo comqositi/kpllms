@@ -86,15 +86,13 @@ func (c *Client) CreateCompletion(ctx context.Context, r *CompletionRequest) (*C
 			if streamPayload.OutputSensitive {
 				return errors.New("模型返回：输出内容违规")
 			}
-			// 如果调用了 functon， 无需流式返回数据
-			if streamPayload.Choices[0].Messages[0].FunctionCall != nil {
-				return nil
-			}
 			if streamPayload.Choices[0].FinishReason == "stop" {
 				return nil
 			}
-			err = r.StreamingFunc(ctx, []byte(streamPayload.Choices[0].Messages[0].Text), nil)
-			return err
+			if streamPayload.Choices[0].Messages[0].Text != "" {
+				return r.StreamingFunc(ctx, []byte(streamPayload.Choices[0].Messages[0].Text), nil)
+			}
+			return nil
 		})
 		if err != nil {
 			return nil, err

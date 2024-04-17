@@ -138,7 +138,7 @@ func parseStreaming(ctx context.Context, r *http.Response, sfunc streamFunc) err
 	scanner := bufio.NewScanner(r.Body)
 	for scanner.Scan() {
 		line := scanner.Text()
-		//fmt.Println(line)
+		fmt.Println(line)
 		err := sfunc(ctx, line)
 		if err != nil {
 			return schema.NewHttpError(0, err.Error())

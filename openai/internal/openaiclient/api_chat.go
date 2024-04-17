@@ -238,7 +238,11 @@ func (c *Client) createChat(ctx context.Context, payload *ChatRequest) (*ChatCom
 				return nil
 			}
 			// 如果是非函数调用
-			if !(streamResponse.Choices[0].Delta.ToolCalls != nil || streamResponse.Choices[0].FinishReason == "tool_calls") {
+			if streamResponse.Choices[0].Delta.ToolCalls == nil {
+				// 空文本不传
+				if streamResponse.Choices[0].Delta.Content == "" {
+					return nil
+				}
 				// 非函数调用
 				chunk := []byte(streamResponse.Choices[0].Delta.Content)
 				// 拼接所有内容
