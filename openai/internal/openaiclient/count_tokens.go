@@ -76,7 +76,6 @@ func NumTokensFromMessages(messages []*ChatMessage, model string) (numTokens int
 		err = fmt.Errorf("encoding for model: %v", err)
 		return 0
 	}
-
 	var tokensPerMessage, tokensPerName int
 	switch model {
 	case "gpt-3.5-turbo-0613",
@@ -103,10 +102,10 @@ func NumTokensFromMessages(messages []*ChatMessage, model string) (numTokens int
 			return
 		}
 	}
-
 	for _, message := range messages {
 		content, ok := message.Content.(string)
 		if !ok {
+			fmt.Println("message asert string fail")
 			continue
 		}
 		numTokens += tokensPerMessage

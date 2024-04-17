@@ -192,8 +192,8 @@ func (o *LLM) Chat(ctx context.Context, messages []*schema.ChatMessage, options 
 			Content:    c.Message.Content,
 			StopReason: fmt.Sprint(c.FinishReason),
 			Usage: &schema.Usage{
-				PromptTokens:     result.Usage.CompletionTokens,
-				CompletionTokens: result.Usage.PromptTokens,
+				PromptTokens:     result.Usage.PromptTokens,
+				CompletionTokens: result.Usage.CompletionTokens,
 				TotalTokens:      result.Usage.TotalTokens,
 			},
 		})
