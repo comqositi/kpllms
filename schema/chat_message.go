@@ -43,8 +43,12 @@ type TextContent struct {
 }
 
 type ImageContent struct {
-	Type     string `json:"type"`
-	ImageUrl string `json:"image_url"`
+	Type     string   `json:"type"`
+	ImageUrl ImageUrl `json:"image_url"`
+}
+
+type ImageUrl struct {
+	Url string `json:"url"`
 }
 
 type ToolCall struct {

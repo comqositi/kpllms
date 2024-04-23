@@ -281,8 +281,10 @@ func TestImageContent(t *testing.T) {
 					Text: "图片里描述的是什么？",
 				},
 				schema.ImageContent{
-					Type:     schema.MultiContentImageUrl,
-					ImageUrl: "https://www.bangongyi.com/statics/images/bgy/index/index_1.jpg",
+					Type: schema.MultiContentImageUrl,
+					ImageUrl: schema.ImageUrl{
+						Url: "https://www.bangongyi.com/statics/images/bgy/index/index_1.jpg",
+					},
 				},
 			},
 		},
