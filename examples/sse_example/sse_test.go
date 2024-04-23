@@ -65,6 +65,7 @@ func TestSse(t *testing.T) {
 		//// 赋值返回值，供外部使用
 		//resp.Success = result.Success
 
+		// 模拟业务调用
 		res, err := writeByLlm(c)
 		if err != nil {
 			fmt.Println(err.Error())
